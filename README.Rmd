@@ -1,0 +1,123 @@
+# process2phenotype
+
+`process2phenotype` is an R package for predicting disease phenotypes associated with a biological process using network diffusion and downstream enrichment analysis.
+
+The package is designed for workflows in which a set of seed genes is propagated across a biological interaction network, producing ranked gene scores that can then be interpreted using disease and ontology-based enrichment tools.
+
+## Overview
+
+Many biological processes are linked to disease through distributed effects across molecular interaction networks rather than through a single gene. `process2phenotype` provides a framework for:
+
+1. defining a biological interaction network
+2. constructing or loading a diffusion kernel for that network
+3. specifying one or more seed genes
+4. propagating signal across the network
+5. ranking genes by diffusion score
+6. interpreting the resulting ranking with enrichment tools
+
+The package was developed as the computational companion to a manuscript on process-to-phenotype prediction.
+
+## Installation
+
+At present, the package is intended for local installation from source.
+
+```r
+devtools::install()
+```
+
+Then load it with:
+
+```r
+library(process2phenotype)
+```
+
+## Minimal example
+
+The package ships with a small demo kernel and network derived from the yeast BioGRID interactome (100 nodes, 2 475 edges). This example loads the demo data, diffuses signal from a single seed gene, and prints the top-scored genes.
+
+```r
+library(process2phenotype)
+library(igraph)
+
+# Load bundled demo data (yeast BioGRID subnetwork)
+demo_net <- readRDS(system.file("extdata", "demo_network.rds", package = "process2phenotype"))
+demo_K   <- load_kernel(
+  system.file("extdata", "demo_kernel.rds", package = "process2phenotype"),
+  network = demo_net
+)
+
+# Pick a seed gene and diffuse
+seed <- "5987"
+scores <- diffuseList(
+  network    = demo_net,
+  inputGenes = seed,
+  kernel     = demo_K
+)
+
+# Top 10 genes by diffusion score
+head(sort(scores, decreasing = TRUE), 10)
+```
+
+Because the demo kernel is a real regularised Laplacian kernel, signal spreads beyond the seed node — its direct neighbours receive the highest scores.
+
+## Kernels
+
+The `kernel` argument must be a diffusion kernel matrix whose row and column names match the node names in the network.
+
+The package provides three kernel utilities:
+
+- `build_kernel(network)` — compute a regularised Laplacian kernel from an igraph network (wrapper around `diffuStats::regularisedLaplacianKernel()`)
+- `load_kernel(path, network)` — load a precomputed kernel from an `.rds` or `.rda` file with validation
+- `download_kernel(name)` — download a large precomputed kernel from Zenodo (e.g. human BioGRID)
+
+For real applications, kernels would usually be precomputed from a biological interaction network such as STRING or BioGRID and loaded via `load_kernel()`.
+
+## Main functions
+
+### Kernel utilities
+
+- `build_kernel()` — compute a diffusion kernel from an igraph network
+- `load_kernel()` — load and validate a precomputed kernel from file
+- `download_kernel()` — download a large precomputed kernel from Zenodo
+
+### Network diffusion
+
+- `diffuseList()` — diffuse a seed gene set across a network
+- `diffuseList2Layer()` — diffuse with optional higher-weight seed genes
+
+### Evaluation and visualisation
+
+- `targetBoxPlot()` — compare diffusion scores across classes
+- `plotROC()` — plot an ROC curve for prioritisation performance
+- `plotPRC()` — plot a precision-recall curve
+- `halfKnownTest()` — perform a simple holdout-style evaluation of diffusion performance
+
+### Enrichment analysis
+
+- `getGSEA_DGN()` — GSEA against disease-gene annotations
+- `getGSEA_DO()` — GSEA against Disease Ontology
+- `getGSEA_MeSH()` — GSEA against MeSH
+- `getGSEA_custom()` — GSEA using a custom `TERM2GENE` table
+
+### Annotation and helper utilities
+
+- `DownloadGenesInGO()` — retrieve genes associated with a GO term
+- `DownloadGenesInMouseGO()` — mouse equivalent of GO term retrieval
+- `getGenesFromList()` — map identifiers using BioMart
+- `downloadGenesInLoci()` — retrieve genes overlapping genomic loci
+
+## Current status
+
+The package is functional and installable, and the core diffusion workflow is in place. Documentation, examples, and tests are still being refined.
+
+## Reproducibility
+
+This project uses `renv` for dependency management. To restore the development environment:
+
+```r
+renv::restore()
+```
+
+## Citation
+
+Citation details will be added once the associated manuscript is finalised.

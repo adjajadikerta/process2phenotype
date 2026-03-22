@@ -1,0 +1,6 @@
+^renv$
+^renv\.lock$
+^process2phenotype\.Rproj$
+^\.Rproj\.user$
+^\.lintr$
+^LICENSE\.md$

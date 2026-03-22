@@ -1,0 +1,26 @@
+Package: process2phenotype
+Type: Package
+Title: Predicting disease phenotypes from biological processes
+Version: 0.1.0
+Authors@R: person("Alvin", "Djajadikerta", email = "aapd2@cantab.ac.uk", role = c("aut", "cre"))
+Description: An R package for predicting disease phenotypes linked to a given biological process by combining network diffusion scores with gene set enrichment analysis.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    diffuStats,
+    ROCR,
+    igraph,
+    ggplot2,
+    varrank,
+    biomaRt,
+    easyPubMed,
+    DOSE,
+    org.Hs.eg.db,
+    clusterProfiler,
+    meshes,
+    data.table
+RoxygenNote: 7.3.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
