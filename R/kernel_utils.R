@@ -143,7 +143,7 @@ download_kernel <- function(name, dest_dir = NULL, overwrite = FALSE) {
     )
   }
   filename <- file_map[[name]]
-  base_url <- "https://zenodo.org/records/XXXXXXX/files"
+  base_url <- "https://zenodo.org/records/19167166/files"
   url <- paste0(base_url, "/", filename)
 
   if (is.null(dest_dir)) {
